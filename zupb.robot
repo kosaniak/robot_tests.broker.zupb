@@ -82,8 +82,8 @@ ${locator.cancellations[1].status}    id = status
 ${locator.cancellations[1].reason}    id = messages-notes
 ${locator.contracts.status}    css=.contract_status
 ${locator.procuringEntity.contactPoint.name}    id = lots-ownername
-${bid.data.participationUrl}    https://auction-sandbox.ea.openprocurement.org/auctions/35a2878750d54987bda72f3600c31abf/login?bidder_id=7832e3bc6c3e40da868cb4777dc72472&hash=d92027f84917d0e58109789010693c130c4758d4
-${tender.data.auctionUrl}    https://auction-sandbox.ea.openprocurement.org/auctions/35a2878750d54987bda72f3600c31abf/login?bidder_id=7832e3bc6c3e40da868cb4777dc72472&hash=d92027f84917d0e58109789010693c130c4758d4
+${bid.data.participationUrl}    id = auction-url
+${tender.data.auctionUrl}    id = to-bid-url
 ${locator.awards[0].status}    id = auction[0].status
 ${locator.awards[1].status}    id = auction[1].status
 
@@ -94,7 +94,7 @@ ${locator.awards[1].status}    id = auction[1].status
     Open Browser    ${USERS.users['${ARGUMENTS[0]}'].homepage}    ${USERS.users['${ARGUMENTS[0]}'].browser}    alias=${ARGUMENTS[0]}
     Set Window Size    @{USERS.users['${ARGUMENTS[0]}'].size}
     Set Window Position    @{USERS.users['${ARGUMENTS[0]}'].position}
-    Run Keyword If    '${ARGUMENTS[0]}' != 'uisce_Viewer'    Login    ${ARGUMENTS[0]}
+    Run Keyword If    '${ARGUMENTS[0]}' != 'zupb_Viewer'    Login    ${ARGUMENTS[0]}
 
 Підготувати дані для оголошення тендера
     [Arguments]    ${username}    ${tender_data}    ${role_name}
@@ -202,13 +202,13 @@ Login
 
 Додати предмет закупівлі
     [Arguments]  ${username}  ${tender_uaid}  ${item}
-    uisce.Пошук тендера по ідентифікатору  ${username}  ${tender_uaid}
+    zupb.Пошук тендера по ідентифікатору  ${username}  ${tender_uaid}
     Click Element  id=lot-update-btn
     Run Keyword And Ignore Error  Click Element    id = btn-item-add
 
 Видалити предмет закупівлі
     [Arguments]  ${username}  ${tender_uaid}  ${item_id}
-    uisce.Пошук тендера по ідентифікатору  ${username}  ${tender_uaid}
+    zupb.Пошук тендера по ідентифікатору  ${username}  ${tender_uaid}
     Click Element  id=lot-update-btn
     Run Keyword And Ignore Error  Click Element    id = btn-item-add
 
@@ -217,7 +217,7 @@ Login
     [Documentation]    ${ARGUMENTS[0]} == username
     ...    ${ARGUMENTS[1]} == ${filepath}
     ...    ${ARGUMENTS[2]} == ${TENDER}
-    uisce.Пошук тендера по ідентифікатору    ${ARGUMENTS[0]}    ${ARGUMENTS[2]}
+    zupb.Пошук тендера по ідентифікатору    ${ARGUMENTS[0]}    ${ARGUMENTS[2]}
     Click Element    id=lot-update-btn
     Select From List By Value    id = files-type    technicalSpecifications
     Choose File    id = file-type-input    ${ARGUMENTS[1]}
@@ -227,7 +227,7 @@ Login
 
 Завантажити документ в тендер з типом
     [Arguments]    ${username}    ${tender_uaid}    ${filepath}    ${doc_type}
-    uisce.Пошук тендера по ідентифікатору    ${username}    ${tender_uaid}
+    zupb.Пошук тендера по ідентифікатору    ${username}    ${tender_uaid}
     Click Element    id=lot-update-btn
     Select From List By Value    id = files-type    ${doc_type}
     Choose File    id = file-type-input    ${filepath}
@@ -236,7 +236,7 @@ Login
 
 Завантажити ілюстрацію    
     [Arguments]  ${username}  ${tender_uaid}  ${filepath}
-    uisce.Пошук тендера по ідентифікатору    ${username}    ${tender_uaid}
+    zupb.Пошук тендера по ідентифікатору    ${username}    ${tender_uaid}
     Click Element    id=lot-update-btn
     Select From List By Value    id = files-type    illustration
     Choose File    id = file-type-input    ${filepath}
@@ -246,7 +246,7 @@ Login
 
 Додати Virtual Data Room
     [Arguments]  ${username}  ${tender_uaid}  ${vdr_url}
-    uisce.Пошук тендера по ідентифікатору   ${username}   ${tender_uaid}
+    zupb.Пошук тендера по ідентифікатору   ${username}   ${tender_uaid}
     Click Element    id=lot-update-btn
     Input Text    id = lots-vdr    ${vdr_url}
     Click Element    id=submissive-btn
@@ -254,7 +254,7 @@ Login
 
 Додати публічний паспорт активу
     [Arguments]  ${username}  ${tender_uaid}  ${accessDetails}
-    uisce.Пошук тендера по ідентифікатору   ${username}   ${tender_uaid}
+    zupb.Пошук тендера по ідентифікатору   ${username}   ${tender_uaid}
     Click Element    id=lot-update-btn
     Input text    id = lots-passport    ${accessDetails} 
     Click Element    id=submissive-btn
@@ -262,7 +262,7 @@ Login
 
 Додати офлайн документ
   [Arguments]  ${username}  ${tender_uaid}  ${accessDetails}  ${title}=Familiarization with bank asset
-  uisce.Пошук тендера по ідентифікатору   ${username}   ${tender_uaid}
+  zupb.Пошук тендера по ідентифікатору   ${username}   ${tender_uaid}
   Click Element  id = lot-update-btn
   Wait Until Element Is Visible  id = lots-address
   Input Text  id = lots-address    ${accessDetails}
@@ -307,7 +307,7 @@ Login
     [Documentation]    ${ARGUMENTS[0]} = username
     ...    ${ARGUMENTS[1]} = ${TENDER_UAID}
     Switch Browser    ${ARGUMENTS[0]}
-    uisce.Пошук тендера по ідентифікатору    ${ARGUMENTS[0]}    ${ARGUMENTS[1]}
+    zupb.Пошук тендера по ідентифікатору    ${ARGUMENTS[0]}    ${ARGUMENTS[1]}
 
 Отримати інформацію із предмету
     [Arguments]    @{ARGUMENTS}
@@ -315,12 +315,12 @@ Login
     ...    ${ARGUMENTS[1]} == tender_uaid
     ...    ${ARGUMENTS[2]} == item_id
     ...    ${ARGUMENTS[3]} == field_name
-    ${return_value}=    Run Keyword And Return    uisce.Отримати інформацію із тендера    ${username}    ${tender_uaid}    ${field_name}
+    ${return_value}=    Run Keyword And Return    zupb.Отримати інформацію із тендера    ${username}    ${tender_uaid}    ${field_name}
     [Return]    ${return_value}
 
 Отримати кількість предметів в тендері
     [Arguments]  ${username}  ${tender_uaid}
-    uisce.Пошук тендера по ідентифікатору   ${username}   ${tender_uaid}
+    zupb.Пошук тендера по ідентифікатору   ${username}   ${tender_uaid}
     ${number_of_items}=  Get Matching Xpath Count  //div[@class="item"]
     [return]  ${number_of_items}
 
@@ -355,7 +355,7 @@ Login
 
 Отримати інформацію про dgfDecisionDate
     ${date_value}=    Отримати текст із поля і показати на сторінці    dgfDecisionDate
-    ${return_value}=    uisce_service.convert_date    ${date_value}
+    ${return_value}=    zupb_service.convert_date    ${date_value}
     [Return]    ${return_value}
 
 Отримати інформацію про tenderAttempts
@@ -388,11 +388,11 @@ Login
 
 Внести зміни в тендер
     [Arguments]  ${username}  ${tender_uaid}  ${field_name}  ${field_value}
-    uisce.Пошук тендера по ідентифікатору    ${username}  ${tender_uaid}
+    zupb.Пошук тендера по ідентифікатору    ${username}  ${tender_uaid}
     Click Element    id = lot-edit-btn
     Run Keyword If    '${field_name}' == 'tenderAttempts'    Select From List By Value    id = lots-tenderattempts    ${field_value}
     Input Text    ${locator.edit.${field_name}}    ${field_value}
-    Choose File    id = file-type-input    /home/wolodymyr/robot_tests/src/robot_tests.broker.uisce/test.txt
+    Choose File    id = file-type-input    /home/wolodymyr/robot_tests/src/robot_tests.broker.zupb/test.txt
     Click Element    id=submit-auction-btn
     Sleep    10
     Wait Until Page Contains Element    id = auction-title    15
@@ -505,7 +505,7 @@ Login
 
 Отримати інформацію про items[0].deliveryDate.endDate
     ${date_value}=    Отримати текст із поля і показати на сторінці    items[0].deliveryDate.endDate
-    ${return_value}=    uisce_service.convert_date    ${date_value}
+    ${return_value}=    zupb_service.convert_date    ${date_value}
     [Return]    ${return_value}
 
 Отримати інформацію про awards[0].status
@@ -518,7 +518,7 @@ Login
 
 Перейти до сторінки запитань
     [Arguments]    ${username}    ${tender_uaid}
-    uisce.Пошук тендера по ідентифікатору    ${username}    ${tender_uaid}
+    zupb.Пошук тендера по ідентифікатору    ${username}    ${tender_uaid}
     Click Element    id = tab-selector-2
 
 Задати питання
@@ -528,7 +528,7 @@ Login
     ...    ${ARGUMENTS[2]} == questionId
     ${title}=    Get From Dictionary    ${ARGUMENTS[2].data}    title
     ${description}=    Get From Dictionary    ${ARGUMENTS[2].data}    description
-    uisce.Пошук тендера по ідентифікатору    ${ARGUMENTS[0]}    ${ARGUMENTS[1]} == tenderUaId
+    zupb.Пошук тендера по ідентифікатору    ${ARGUMENTS[0]}    ${ARGUMENTS[1]} == tenderUaId
     Wait Until Page Contains Element    id = auction-view-btn
     Click Element    id = auction-view-btn
     Click Element    id = tab-2
@@ -542,12 +542,12 @@ Login
 
 Задати запитання на тендер
     [Arguments]    ${username}    ${tender_uaid}    ${question}
-    uisce.Пошук тендера по ідентифікатору    ${username}    ${tender_uaid}
-    uisce.Задати питання    ${username}    ${tender_uaid}    ${question}
+    zupb.Пошук тендера по ідентифікатору    ${username}    ${tender_uaid}
+    zupb.Задати питання    ${username}    ${tender_uaid}    ${question}
 
 Задати запитання на предмет
   [Arguments]  ${username}  ${tender_uaid}  ${item_id}  ${question}
-  uisce.Пошук тендера по ідентифікатору  ${username}  ${tender_uaid}
+  zupb.Пошук тендера по ідентифікатору  ${username}  ${tender_uaid}
   Sleep    2
   Click Element     id = question[${item_id}].item
   Sleep  3
@@ -583,7 +583,7 @@ Login
 
 Відповісти на питання
     [Arguments]  ${username}  ${tender_uaid}  ${answer_data}  ${question_id}
-    uisce.Перейти до сторінки запитань    ${username}  ${tender_uaid}
+    zupb.Перейти до сторінки запитань    ${username}  ${tender_uaid}
     Click Element    id = question[${question_id}].answer
     Sleep    1
     Input Text    id=questions-answer    ${answer_data.data.answer}
@@ -592,7 +592,7 @@ Login
 
 Відповісти на запитання
     [Arguments]  ${username}  ${tender_uaid}  ${answer_data}  ${question_id}
-    uisce.Перейти до сторінки запитань    ${username}  ${tender_uaid}
+    zupb.Перейти до сторінки запитань    ${username}  ${tender_uaid}
     Click Element    id = question[${question_id}].answer
     Sleep    1
     Input Text    id=questions-answer    ${answer_data.data.answer}
@@ -603,7 +603,7 @@ Login
 
 Отримати інформацію із запитання
     [Arguments]    ${username}    ${tender_uaid}    ${question_id}    ${field_name}
-    uisce.Перейти до сторінки запитань    ${username}    ${tender_uaid}
+    zupb.Перейти до сторінки запитань    ${username}    ${tender_uaid}
     Sleep    1
     ${return_value}=    Run Keyword If    '${field_name}' == 'title'    Отримати інформацію про questions[${index}].title
     ...    ELSE IF    '${field_name}' == 'answer'    Отримати інформацію про questions[${index}].answer
@@ -618,7 +618,7 @@ Login
     ...    ${ARGUMENTS[2]} == ${test_bid_data}
     ...    ${ARGUMENTS[3]} == ${filepath}
     ${amount}=    get_str    ${ARGUMENTS[2].data.value.amount}
-    uisce.Пошук тендера по ідентифікатору    ${ARGUMENTS[0]}    ${ARGUMENTS[1]}
+    zupb.Пошук тендера по ідентифікатору    ${ARGUMENTS[0]}    ${ARGUMENTS[1]}
     sleep    1
     Click Element    id = bid-create-btn
     sleep    1s
@@ -729,7 +729,7 @@ Login
 
 Отримати інформацію із документа по індексу
     [Arguments]    ${username}    ${tender_uaid}    ${document_index}    ${field}
-    uisce.Пошук тендера по ідентифікатору    ${username}    ${tender_uaid}
+    zupb.Пошук тендера по ідентифікатору    ${username}    ${tender_uaid}
     ${doc_value}=    Get Text    xpath=(//*[@id='auction-documents']/table[${document_index + 1}]//span[contains(@class, 'documentType')])
     [Return]    ${doc_value}
 
@@ -740,19 +740,19 @@ Login
 
 Отримати кількість документів в тендері
     [Arguments]    ${username}    ${tender_uaid}
-    uisce.Пошук тендера по ідентифікатору    ${username}    ${tender_uaid}
+    zupb.Пошук тендера по ідентифікатору    ${username}    ${tender_uaid}
     ${tender_doc_number}=    Get Matching Xpath Count    (//*[@id='auction-documents']/table)
     [Return]    ${tender_doc_number}
 
 Отримати кількість документів в ставці
   [Arguments]  ${username}  ${tender_uaid}  ${bid_index}
-  uisce.Пошук тендера по ідентифікатору  ${username}  ${tender_uaid}
+  zupb.Пошук тендера по ідентифікатору  ${username}  ${tender_uaid}
   ${bid_doc_number}=   Get Matching Xpath Count   xpath=(//*[@id='pnAwardList']/div[last()]/div/div[1]/div/div/div[2]/table)
   [Return]  ${bid_doc_number}
 
 Отримати документ
     [Arguments]    ${username}    ${tender_uaid}    ${doc_id}
-    uisce.Пошук тендера по ідентифікатору    ${username}    ${doc_id}
+    zupb.Пошук тендера по ідентифікатору    ${username}    ${doc_id}
     sleep    1
     ${file_name}=    Get Text    id = document-id
     ${url}=    Get Element Attribute    id = document-id@href
@@ -767,7 +767,7 @@ Login
 
 Скасування рішення кваліфікаційної комісії
     [Arguments]    ${username}    ${tender_uaid}    ${award_num}
-    uisce.Пошук тендера по ідентифікатору    ${username}    ${tender_uaid}
+    zupb.Пошук тендера по ідентифікатору    ${username}    ${tender_uaid}
     Wait Until Page Contains Element    id = bid-link
     Click Element    id = bid-link
     Sleep    2
@@ -775,7 +775,7 @@ Login
 
 Завантажити документ рішення кваліфікаційної комісії
     [Arguments]    ${username}    ${filepath}    ${tender_uaid}    ${award_num}
-    uisce.Пошук тендера по ідентифікатору    ${username}    ${tender_uaid}
+    zupb.Пошук тендера по ідентифікатору    ${username}    ${tender_uaid}
     Wait Until Page Contains Element    id = winner-bid-link
     Click Element    id = winner-bid-link
     Cliek Element    id = disqualify-link
@@ -786,7 +786,7 @@ Login
 
 Завантажити протокол аукціону в авард
     [Arguments]    ${username}    ${tender_uaid}    ${filepath}    ${award_index}
-    uisce.Пошук тендера по ідентифікатору    ${username}    ${tender_uaid}
+    zupb.Пошук тендера по ідентифікатору    ${username}    ${tender_uaid}
     Wait Until Page Contains Element    id = winner-bid-link
     Click Element    id = winner-bid-link
     Sleep    1
@@ -798,7 +798,7 @@ Login
 
 Підтвердити постачальника
     [Arguments]  ${username}  ${tender_uaid}  ${award_num}
-    uisce.Пошук тендера по ідентифікатору  ${username}  ${tender_uaid}
+    zupb.Пошук тендера по ідентифікатору  ${username}  ${tender_uaid}
     Wait Until Page Contains Element      id = winner-bid-link
     Click Element    id = winner-bid-link
     Wait Until Page Contains Element      id = confirm-payment-btn
@@ -807,7 +807,7 @@ Login
 
 Завантажити угоду до тендера
     [Arguments]    ${username}    ${tender_uaid}    ${contract_num}    ${filepath}
-    uisce.Пошук тендера по ідентифікатору    ${username}    ${tender_uaid}
+    zupb.Пошук тендера по ідентифікатору    ${username}    ${tender_uaid}
     Wait Until Page Contains Element    id = winner-bid-link
     Click Element    id = winner-bid-link
     Wait Until Page Contains Element    id = upload-contract-link
@@ -819,7 +819,7 @@ Login
 
 Підтвердити наявність протоколу аукціону
     [Arguments]  ${username}  ${tender_uaid}  ${award_index}
-    uisce.Пошук тендера по ідентифікатору    ${username}  ${tender_uaid}
+    zupb.Пошук тендера по ідентифікатору    ${username}  ${tender_uaid}
     Wait Until Page Contains Element    id = winner-bid-link
     Click Element    id = winner-bid-link
     Click Element    id = confirm-protocol-btn
@@ -828,14 +828,14 @@ Login
     [Arguments]    ${username}    ${tender_uaid}    ${contract_num}
     ${file_path}    ${file_title}    ${file_content}=    create_fake_doc
     Sleep    1
-    uisce.Завантажити угоду до тендера    ${username}    ${tender_uaid}    1    ${filepath}
+    zupb.Завантажити угоду до тендера    ${username}    ${tender_uaid}    1    ${filepath}
     Wait Until Page Contains Element    id = contract-signed-btn
     Click Element    id = contract-signed-btn
     Click Element    id = contract-signed-submit
 
 Дискваліфікувати постачальника
   [Arguments]  ${username}  ${tender_uaid}  ${award_num}  ${description}
-  uisce.Пошук тендера по ідентифікатору    ${username}  ${tender_uaid}
+  zupb.Пошук тендера по ідентифікатору    ${username}  ${tender_uaid}
   Wait Until Page Contains Element    id = winner-bid-link
   Click Element    id = winner-bid-link
   Input text          id = awards-disqualification    ${description}
