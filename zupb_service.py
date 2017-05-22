@@ -2,6 +2,7 @@
 import pytz
 import dateutil.parser
 import urllib
+import os
 
 from datetime import datetime
 from robot.libraries.BuiltIn import BuiltIn
@@ -63,3 +64,11 @@ def download_file(url, file_name, output_dir):
 def inc(value):
    return int(value) + 1
 
+def to_str(value):
+   return str(value)
+
+def to_int(value):
+   return int(value)
+
+def get_upload_file_path():
+   return os.path.join(os.getcwd(), 'src', 'robot_tests.broker.zupb', 'test.txt')
