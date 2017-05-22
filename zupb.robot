@@ -2,7 +2,7 @@
 Library           String
 Library           Selenium2Library
 Library           Collections
-Library           etm_service.py
+Library           zupb_service.py
 
 *** Variables ***
 ${locator.edit.description}    id = lots-description
@@ -96,7 +96,7 @@ ${locator.awards[1].status}    id = award[1].status
     Open Browser    ${USERS.users['${ARGUMENTS[0]}'].homepage}    ${USERS.users['${ARGUMENTS[0]}'].browser}    alias=${ARGUMENTS[0]}
     Set Window Size    @{USERS.users['${ARGUMENTS[0]}'].size}
     Set Window Position    @{USERS.users['${ARGUMENTS[0]}'].position}
-    Run Keyword If    '${ARGUMENTS[0]}' != 'etm_Viewer'    Login    ${ARGUMENTS[0]}
+    Run Keyword If    '${ARGUMENTS[0]}' != 'zupb_Viewer'    Login    ${ARGUMENTS[0]}
 
 Підготувати дані для оголошення тендера
     [Arguments]    ${username}    ${tender_data}    ${role_name}
@@ -198,13 +198,13 @@ Login
 
 Додати предмет закупівлі
     [Arguments]  ${username}  ${tender_uaid}  ${item}
-    etm.Пошук тендера по ідентифікатору  ${username}  ${tender_uaid}
+    zupb.Пошук тендера по ідентифікатору  ${username}  ${tender_uaid}
     Click Element  id=lot-update-btn
     Run Keyword And Ignore Error  Click Element    id = btn-item-add
 
 Видалити предмет закупівлі
     [Arguments]  ${username}  ${tender_uaid}  ${item_id}
-    etm.Пошук тендера по ідентифікатору  ${username}  ${tender_uaid}
+    zupb.Пошук тендера по ідентифікатору  ${username}  ${tender_uaid}
     Click Element  id=lot-update-btn
     Run Keyword And Ignore Error  Click Element    id = btn-item-add
 
@@ -213,7 +213,7 @@ Login
     [Documentation]    ${ARGUMENTS[0]} == username
     ...    ${ARGUMENTS[1]} == ${filepath}
     ...    ${ARGUMENTS[2]} == ${TENDER}
-    etm.Пошук тендера по ідентифікатору    ${ARGUMENTS[0]}    ${ARGUMENTS[2]}
+    zupb.Пошук тендера по ідентифікатору    ${ARGUMENTS[0]}    ${ARGUMENTS[2]}
     Click Element    id=lot-update-btn
     Select From List By Value    id = files-type    technicalSpecifications
     Choose File    id = file-type-input    ${ARGUMENTS[1]}
@@ -223,7 +223,7 @@ Login
 
 Завантажити документ в тендер з типом
     [Arguments]    ${username}    ${tender_uaid}    ${filepath}    ${doc_type}
-    etm.Пошук тендера по ідентифікатору    ${username}    ${tender_uaid}
+    zupb.Пошук тендера по ідентифікатору    ${username}    ${tender_uaid}
     Click Element    id=lot-update-btn
     Select From List By Value    id = files-type    ${doc_type}
     Choose File    id = file-type-input    ${filepath}
@@ -232,7 +232,7 @@ Login
 
 Завантажити ілюстрацію
     [Arguments]  ${username}  ${tender_uaid}  ${filepath}
-    etm.Пошук тендера по ідентифікатору    ${username}    ${tender_uaid}
+    zupb.Пошук тендера по ідентифікатору    ${username}    ${tender_uaid}
     Click Element    id=lot-update-btn
     Select From List By Value    id = files-type    illustration
     Choose File    id = file-type-input    ${filepath}
@@ -242,7 +242,7 @@ Login
 
 Додати Virtual Data Room
     [Arguments]  ${username}  ${tender_uaid}  ${vdr_url}
-    etm.Пошук тендера по ідентифікатору   ${username}   ${tender_uaid}
+    zupb.Пошук тендера по ідентифікатору   ${username}   ${tender_uaid}
     Click Element    id=lot-update-btn
     Input Text    id = lots-vdr    ${vdr_url}
     Click Element    id=submissive-btn
@@ -250,7 +250,7 @@ Login
 
 Додати публічний паспорт активу
     [Arguments]  ${username}  ${tender_uaid}  ${accessDetails}
-    etm.Пошук тендера по ідентифікатору   ${username}   ${tender_uaid}
+    zupb.Пошук тендера по ідентифікатору   ${username}   ${tender_uaid}
     Click Element    id=lot-update-btn
     Input text    id = lots-passport    ${accessDetails} 
     Click Element    id=submissive-btn
@@ -258,7 +258,7 @@ Login
 
 Додати офлайн документ
   [Arguments]  ${username}  ${tender_uaid}  ${accessDetails}  ${title}=Familiarization with bank asset
-  etm.Пошук тендера по ідентифікатору   ${username}   ${tender_uaid}
+  zupb.Пошук тендера по ідентифікатору   ${username}   ${tender_uaid}
   Click Element  id = lot-update-btn
   Wait Until Element Is Visible  id = lots-address
   Input Text  id = lots-address    ${accessDetails}
@@ -293,7 +293,7 @@ Login
     [Documentation]    ${ARGUMENTS[0]} = username
     ...    ${ARGUMENTS[1]} = ${TENDER_UAID}
     Switch Browser    ${ARGUMENTS[0]}
-    etm.Пошук тендера по ідентифікатору    ${ARGUMENTS[0]}    ${ARGUMENTS[1]}
+    zupb.Пошук тендера по ідентифікатору    ${ARGUMENTS[0]}    ${ARGUMENTS[1]}
 
 Отримати інформацію із предмету
     [Arguments]    @{ARGUMENTS}
@@ -301,12 +301,12 @@ Login
     ...    ${ARGUMENTS[1]} == tender_uaid
     ...    ${ARGUMENTS[2]} == item_id
     ...    ${ARGUMENTS[3]} == field_name
-    ${return_value}=    Run Keyword And Return    etm.Отримати інформацію із тендера    ${username}    ${tender_uaid}    ${field_name}
+    ${return_value}=    Run Keyword And Return    zupb.Отримати інформацію із тендера    ${username}    ${tender_uaid}    ${field_name}
     [Return]    ${return_value}
 
 Отримати кількість предметів в тендері
     [Arguments]  ${username}  ${tender_uaid}
-    etm.Пошук тендера по ідентифікатору   ${username}   ${tender_uaid}
+    zupb.Пошук тендера по ідентифікатору   ${username}   ${tender_uaid}
     ${number_of_items}=  Get Matching Xpath Count  //div[@class="item"]
     [return]  ${number_of_items}
 
@@ -341,7 +341,7 @@ Login
 
 Отримати інформацію про dgfDecisionDate
     ${date_value}=    Отримати текст із поля і показати на сторінці    dgfDecisionDate
-    ${return_value}=    etm_service.convert_date    ${date_value}
+    ${return_value}=    zupb_service.convert_date    ${date_value}
     [Return]    ${return_value}
 
 Отримати інформацію про tenderAttempts
@@ -384,7 +384,7 @@ Login
 Внести зміни в тендер
     [Arguments]  ${username}  ${tender_uaid}  ${field_name}  ${field_value}
     ${testFilePath}=    get_upload_file_path
-    etm.Пошук тендера по ідентифікатору    ${username}  ${tender_uaid}
+    zupb.Пошук тендера по ідентифікатору    ${username}  ${tender_uaid}
     Click Element    id = lot-edit-btn
     Input Text    ${locator.edit.${field_name}}    ${field_value}
     Choose File    id = file-type-input    ${testFilePath}
@@ -498,7 +498,7 @@ Login
 
 Отримати інформацію про items[0].deliveryDate.endDate
     ${date_value}=    Отримати текст із поля і показати на сторінці    items[0].deliveryDate.endDate
-    ${return_value}=    etm_service.convert_date    ${date_value}
+    ${return_value}=    zupb_service.convert_date    ${date_value}
     [Return]    ${return_value}
 
 Отримати інформацію про auction[0].status
@@ -511,7 +511,7 @@ Login
 
 Перейти до сторінки запитань
     [Arguments]    ${username}    ${tender_uaid}
-    etm.Пошук тендера по ідентифікатору    ${username}    ${tender_uaid}
+    zupb.Пошук тендера по ідентифікатору    ${username}    ${tender_uaid}
     Click Element    id = tab-selector-2
 
 Задати питання
@@ -521,7 +521,7 @@ Login
     ...    ${ARGUMENTS[2]} == questionId
     ${title}=    Get From Dictionary    ${ARGUMENTS[2].data}    title
     ${description}=    Get From Dictionary    ${ARGUMENTS[2].data}    description
-    etm.Пошук тендера по ідентифікатору    ${ARGUMENTS[0]}    ${ARGUMENTS[1]} == tenderUaId
+    zupb.Пошук тендера по ідентифікатору    ${ARGUMENTS[0]}    ${ARGUMENTS[1]} == tenderUaId
     Wait Until Page Contains Element    id = auction-view-btn
     Click Element    id = auction-view-btn
     Click Element    id = tab-2
@@ -535,7 +535,7 @@ Login
 
 Задати запитання на предмет
   [Arguments]  ${username}  ${tender_uaid}  ${item_id}  ${question}
-  etm.Пошук тендера по ідентифікатору  ${username}  ${tender_uaid}
+  zupb.Пошук тендера по ідентифікатору  ${username}  ${tender_uaid}
   Sleep    2
   Click Element     id = question[${item_id}].item
   Sleep  3
@@ -569,17 +569,13 @@ Login
     ${return_value}=    convert_date_time_to_iso    ${return_value}
     [Return]    ${return_value}
 
-Отримати інформацію про awards[0].status
-    ${return_value}=     Отримати текст із поля і показати на сторінці    awards[0].status
-    [Return]    ${return_value}
-
-Отримати інформацію про awards[1].status
-    ${return_value}=     Отримати текст із поля і показати на сторінці    awards[1].status
+Отримати інформацію про awards[${index}].status
+    ${return_value}=     Отримати текст із поля і показати на сторінці    awards[${index}].status
     [Return]    ${return_value}
 
 Відповісти на питання
     [Arguments]  ${username}  ${tender_uaid}  ${answer_data}  ${question_id}
-    etm.Перейти до сторінки запитань    ${username}  ${tender_uaid}
+    zupb.Перейти до сторінки запитань    ${username}  ${tender_uaid}
     Click Element    id = question[${question_id}].answer
     Sleep    1
     Input Text    id=questions-answer    ${answer_data.data.answer}
@@ -588,7 +584,7 @@ Login
 
 Відповісти на запитання
     [Arguments]  ${username}  ${tender_uaid}  ${answer_data}  ${question_id}
-    etm.Перейти до сторінки запитань    ${username}  ${tender_uaid}
+    zupb.Перейти до сторінки запитань    ${username}  ${tender_uaid}
     Click Element    id = question[${question_id}].answer
     Sleep    1
     Input Text    id=questions-answer    ${answer_data.data.answer}
@@ -597,7 +593,7 @@ Login
 
 Отримати інформацію із запитання
     [Arguments]    ${username}    ${tender_uaid}    ${question_id}    ${field_name}
-    etm.Перейти до сторінки запитань    ${username}    ${tender_uaid}
+    zupb.Перейти до сторінки запитань    ${username}    ${tender_uaid}
     Sleep    1
     ${return_value}=    Run Keyword If    '${field_name}' == 'title'    Отримати інформацію про questions[${index}].title
     ...    ELSE IF    '${field_name}' == 'answer'    Отримати інформацію про questions[${index}].answer
@@ -606,7 +602,7 @@ Login
 
 Подати цінову пропозицію
     [Arguments]  ${username}  ${tender_uaid}  ${bid}
-    etm.Пошук тендера по ідентифікатору    ${username}    ${tender_uaid}
+    zupb.Пошук тендера по ідентифікатору    ${username}    ${tender_uaid}
     sleep    1
     Click Element    id = bid-create-btn
     Sleep    1s
@@ -631,7 +627,7 @@ ConvToStr And Input Text
 
 Отримати інформацію із пропозиції
     [Arguments]    ${username}    ${tender_uaid}    ${field}
-    etm.Пошук тендера по ідентифікатору    ${username}    ${tender_uaid}
+    zupb.Пошук тендера по ідентифікатору    ${username}    ${tender_uaid}
     Click Element    id =bids[0].link
     Wait Until Page Contains Element    id=bids-value_amount
     ${value}=    Get Value    id=bids-value_amount
@@ -663,7 +659,7 @@ ConvToStr And Input Text
     ...    ${ARGUMENTS[1]} ==  file
     ...    ${ARGUMENTS[2]} ==  award_index
     Reload Page
-    etm.Пошук тендера по ідентифікатору    ${ARGUMENTS[0]}    ${ARGUMENTS[1]}
+    zupb.Пошук тендера по ідентифікатору    ${ARGUMENTS[0]}    ${ARGUMENTS[1]}
     Click Element    id = bids[${ARGUMENTS[2]}].link
     Select From List By Value    id = files-type    commercialProposal
     Choose File       id = files-file    ${ARGUMENTS[1]}
@@ -686,7 +682,7 @@ ConvToStr And Input Text
 
 Отримати посилання на аукціон для глядача
     [Arguments]  ${username}  ${tender_uaid}  ${lot_id}=${Empty}
-    etm.Пошук тендера по ідентифікатору   ${username}  ${tender_uaid}
+    zupb.Пошук тендера по ідентифікатору   ${username}  ${tender_uaid}
     Wait Until Page Contains Element    id = auction-url
     Sleep    1
     ${tender.data.auctionUrl}=    Get Element Attribute    xpath=//*[@id="auction-url"]/a@href
@@ -694,7 +690,7 @@ ConvToStr And Input Text
 
 Отримати посилання на аукціон для учасника
     [Arguments]  ${username}  ${tender_uaid}
-    etm.Пошук тендера по ідентифікатору   ${username}  ${tender_uaid}
+    zupb.Пошук тендера по ідентифікатору   ${username}  ${tender_uaid}
     Wait Until Page Contains Element    id = auction-url
     Sleep    1
     ${bid.data.participationUrl}=    Get Element Attribute    xpath=//*[@id="auction-url"]/a@href
@@ -702,7 +698,7 @@ ConvToStr And Input Text
 
 Отримати інформацію із документа по індексу
     [Arguments]    ${username}    ${tender_uaid}    ${document_index}    ${field}
-    etm.Пошук тендера по ідентифікатору    ${username}    ${tender_uaid}
+    zupb.Пошук тендера по ідентифікатору    ${username}    ${tender_uaid}
     ${doc_value}    Get Text    xpath=(//*[@id='auction-documents']/table[${document_index + 1}]//span[contains(@class, 'documentType')])
     [Return]    ${doc_value}
 
@@ -713,19 +709,19 @@ ConvToStr And Input Text
 
 Отримати кількість документів в тендері
     [Arguments]    ${username}    ${tender_uaid}
-    etm.Пошук тендера по ідентифікатору    ${username}    ${tender_uaid}
+    zupb.Пошук тендера по ідентифікатору    ${username}    ${tender_uaid}
     ${tender_doc_number}    Get Matching Xpath Count    (//*[@id='auction-documents']/table)
     [Return]    ${tender_doc_number}
 
 Отримати кількість документів в ставці
   [Arguments]  ${username}  ${tender_uaid}  ${bid_index}
-  etm.Пошук тендера по ідентифікатору  ${username}  ${tender_uaid}
+  zupb.Пошук тендера по ідентифікатору  ${username}  ${tender_uaid}
   ${bid_doc_number}   Get Matching Xpath Count   xpath=(//*[@id='pnAwardList']/div[last()]/div/div[1]/div/div/div[2]/table)
   [Return]  ${bid_doc_number}
 
 Отримати документ
     [Arguments]    ${username}    ${tender_uaid}    ${doc_id}
-    etm.Пошук тендера по ідентифікатору    ${username}    ${tender_uaid}
+    zupb.Пошук тендера по ідентифікатору    ${username}    ${tender_uaid}
     sleep    1
     ${file_name}    Get Text    xpath=//*[contains(text(),'${doc_id}')]
     ${url}    Get Element Attribute    xpath=//*[contains(text(),'${doc_id}')]@href
@@ -740,7 +736,7 @@ ConvToStr And Input Text
 
 Скасування рішення кваліфікаційної комісії
     [Arguments]    ${username}    ${tender_uaid}    ${award_num}
-    etm.Пошук тендера по ідентифікатору    ${username}    ${tender_uaid}
+    zupb.Пошук тендера по ідентифікатору    ${username}    ${tender_uaid}
     Wait Until Page Contains Element    id = bid-link
     Click Element    id = bid-link
     Sleep    2
@@ -767,7 +763,7 @@ ConvToStr And Input Text
 
 Завантажити документ рішення кваліфікаційної комісії
     [Arguments]    ${username}    ${filepath}    ${tender_uaid}    ${award_num}
-    etm.Пошук тендера по ідентифікатору    ${username}    ${tender_uaid}
+    zupb.Пошук тендера по ідентифікатору    ${username}    ${tender_uaid}
     Wait Until Page Contains Element    id = bids[${award_num}].link
     Click Element    id = bids[${award_num}].link
     Click Element    id = disqualify-link
@@ -779,7 +775,7 @@ ConvToStr And Input Text
 Завантажити протокол аукціону в авард
     [Arguments]    ${username}    ${tender_uaid}    ${filepath}    ${award_index}
     ${testFilePath}=    get_upload_file_path
-    etm.Пошук тендера по ідентифікатору    ${username}    ${tender_uaid}
+    zupb.Пошук тендера по ідентифікатору    ${username}    ${tender_uaid}
     Wait Until Page Contains Element    id = bids[${award_index}].link
     Click Element    id = bids[${award_index}].link
     Sleep    1
@@ -791,16 +787,16 @@ ConvToStr And Input Text
 
 Підтвердити постачальника
     [Arguments]  ${username}  ${tender_uaid}  ${award_num}
-    etm.Пошук тендера по ідентифікатору  ${username}  ${tender_uaid}
-    Wait Until Page Contains Element      id = bids[${award_index}].link
-    Click Element    id = bids[${award_index}].link
+    zupb.Пошук тендера по ідентифікатору  ${username}  ${tender_uaid}
+    Wait Until Page Contains Element      id = bids[${award_num}].link
+    Click Element    id = bids[${award_num}].link
     Wait Until Page Contains Element      id = confirm-payment-btn
     Click Element    id = confirm-payment-btn
     Sleep    1
 
 Завантажити угоду до тендера
     [Arguments]    ${username}    ${tender_uaid}    ${contract_num}    ${filepath}
-    etm.Пошук тендера по ідентифікатору    ${username}    ${tender_uaid}
+    zupb.Пошук тендера по ідентифікатору    ${username}    ${tender_uaid}
     Wait Until Page Contains Element    name = winner
     Click Element    name = winner
     Wait Until Page Contains Element    id = upload-contract-link
@@ -812,7 +808,7 @@ ConvToStr And Input Text
 
 Підтвердити наявність протоколу аукціону
     [Arguments]  ${username}  ${tender_uaid}  ${award_index}
-    etm.Пошук тендера по ідентифікатору    ${username}  ${tender_uaid}
+    zupb.Пошук тендера по ідентифікатору    ${username}  ${tender_uaid}
     Wait Until Page Contains Element    name = winner
     Click Element    name = winner
     Click Element    id = confirm-protocol-btn
@@ -827,7 +823,7 @@ ConvToStr And Input Text
 
 Дискваліфікувати постачальника
   [Arguments]  ${username}  ${tender_uaid}  ${award_num}  ${description}
-  etm.Пошук тендера по ідентифікатору    ${username}  ${tender_uaid}
+  zupb.Пошук тендера по ідентифікатору    ${username}  ${tender_uaid}
   Wait Until Page Contains Element    id = bids[${award_num}].link
   Click Element    id = bids[${award_num}].link
   Input text          id = disqualify-link    ${description}
