@@ -174,7 +174,6 @@ Login
     \       Додати предмет    ${items[${index}]}          ${index}
     Sleep    1
     Click Element    id = submissive-btn
-    Wait Until Page Contains    Успішно оновлено    10
     Click Element    id =publish-btn
     Wait Until Page Contains    Аукціон опубліковано
     ${tender_id}=    Get Text    id = auction-id
@@ -510,11 +509,6 @@ Login
     ${return_value}=     Отримати текст із поля і показати на сторінці    auction[1].status
     [Return]    ${return_value}
 
-Перейти до сторінки запитань
-    [Arguments]    ${username}    ${tender_uaid}
-    zupb.Пошук тендера по ідентифікатору    ${username}    ${tender_uaid}
-    Click Element    id = tab-selector-2
-
 Задати питання
     [Arguments]    @{ARGUMENTS}
     [Documentation]    ${ARGUMENTS[0]} == username
@@ -581,6 +575,11 @@ Login
     Sleep    1
     Input Text    id=questions-answer    ${answer_data.data.answer}
     Click Element    id=create-question-btn
+    Click Element    id = tab-selector-2
+
+Перейти до сторінки запитань
+    [Arguments]    ${username}    ${tender_uaid}
+    zupb.Пошук тендера по ідентифікатору    ${username}    ${tender_uaid}
     Click Element    id = tab-selector-2
 
 Отримати інформацію із запитання
@@ -696,7 +695,8 @@ ConvToStr And Input Text
 
 Отримати інформацію із документа
     [Arguments]    ${username}    ${tender_uaid}    ${doc_id}    ${field_name}
-    ${doc_value}    Get Text    xpath=//*[contains(text(),'${doc_id}')]
+    zupb.Пошук тендера по ідентифікатору    ${username}    ${tender_uaid}
+    ${doc_value}    Get Text    name = ${field_name}
     [Return]    ${doc_value}
 
 Отримати кількість документів в тендері
@@ -817,6 +817,7 @@ ConvToStr And Input Text
 Підтвердити підписання контракту
     [Arguments]    ${username}    ${tender_uaid}    ${contract_num}
     ${file_path}    ${file_title}    ${file_content}=    create_fake_doc
+    zupb.Пошук тендера по ідентифікатору    ${username}  ${tender_uaid}
     Sleep    1
     Wait Until Page Contains Element    name = winner
     Click Element    name = winner
@@ -830,5 +831,5 @@ ConvToStr And Input Text
   Wait Until Page Contains Element    id = bids[${award_num}].link
   Click Element    id = bids[${award_num}].link
   Click Element    id = disqualify-link
-  Input text          id = disqualify-description    ${description}
+  Input text          id = awards-description    ${description}
   Click Element       id = upload-disqualification-btn
