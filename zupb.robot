@@ -690,13 +690,13 @@ ConvToStr And Input Text
 Отримати інформацію із документа по індексу
     [Arguments]    ${username}    ${tender_uaid}    ${document_index}    ${field}
     zupb.Пошук тендера по ідентифікатору    ${username}    ${tender_uaid}
-    ${doc_value}    Get Text    xpath=(//*[@id='auction-documents']/table[${document_index + 1}]//span[contains(@class, 'documentType')])
+    ${doc_value}    Get Text    name = ${document_index}.${field}
     [Return]    ${doc_value}
 
 Отримати інформацію із документа
-    [Arguments]    ${username}    ${tender_uaid}    ${doc_id}    ${field_name}
+    [Arguments]    ${username}    ${tender_uaid}    ${doc_id}    ${field}
     zupb.Пошук тендера по ідентифікатору    ${username}    ${tender_uaid}
-    ${doc_value}    Get Text    name = ${doc_id}.${field_name}
+    ${doc_value}    Get Text    xpath=(//a[contains(@name,'${field}.${doc_id}')])
     [Return]    ${doc_value}
 
 Отримати кількість документів в тендері
@@ -728,9 +728,10 @@ ConvToStr And Input Text
 
 Скасування рішення кваліфікаційної комісії
     [Arguments]    ${username}    ${tender_uaid}    ${award_num}
+    Sleep    200
     zupb.Пошук тендера по ідентифікатору    ${username}    ${tender_uaid}
     Wait Until Page Contains Element    id = bids[${award_num}].link
-    Click Element    id = bids[${award_num}].link
+    Click Element    name = bids[${award_num}].link
     Sleep    2
     Click Element    id = cancel-bid-btn
 
@@ -801,7 +802,7 @@ ConvToStr And Input Text
     Wait Until Page Contains Element    name = winner
     Click Element    name = winner
     Wait Until Page Contains Element    id = upload-contract-link
-    Click Element    name = winner
+    Click Element    id = upload-contract-link
     Choose File    id = files-file    ${filepath}
     Sleep    1
     Click Element    id = upload-contract-btn
