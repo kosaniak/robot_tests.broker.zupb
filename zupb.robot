@@ -214,6 +214,7 @@ Login
     ...    ${ARGUMENTS[2]} == ${TENDER}
     zupb.Пошук тендера по ідентифікатору    ${ARGUMENTS[0]}    ${ARGUMENTS[2]}
     Click Element    id=lot-update-btn
+    Wait Until Page Contains Element    id = files-type    20
     Select From List By Value    id = files-type    technicalSpecifications
     Choose File    id = file-type-input    ${ARGUMENTS[1]}
     Sleep    1
@@ -224,6 +225,7 @@ Login
     [Arguments]    ${username}    ${tender_uaid}    ${filepath}    ${doc_type}
     zupb.Пошук тендера по ідентифікатору    ${username}    ${tender_uaid}
     Click Element    id=lot-update-btn
+    Wait Until Page Contains Element    id = files-type    20
     Select From List By Value    id = files-type    ${doc_type}
     Choose File    id = file-type-input    ${filepath}
     Sleep    1
@@ -233,6 +235,7 @@ Login
     [Arguments]  ${username}  ${tender_uaid}  ${filepath}
     zupb.Пошук тендера по ідентифікатору    ${username}    ${tender_uaid}
     Click Element    id=lot-update-btn
+    Wait Until Page Contains Element    id = files-type    20
     Select From List By Value    id = files-type    illustration
     Choose File    id = file-type-input    ${filepath}
     Sleep    1
@@ -243,6 +246,7 @@ Login
     [Arguments]  ${username}  ${tender_uaid}  ${vdr_url}
     zupb.Пошук тендера по ідентифікатору   ${username}   ${tender_uaid}
     Click Element    id=lot-update-btn
+    Wait Until Page Contains Element    id = lots-vdr    20
     Input Text    id = lots-vdr    ${vdr_url}
     Click Element    id=submissive-btn
     Reload Page
@@ -251,6 +255,7 @@ Login
     [Arguments]  ${username}  ${tender_uaid}  ${accessDetails}
     zupb.Пошук тендера по ідентифікатору   ${username}   ${tender_uaid}
     Click Element    id=lot-update-btn
+    Wait Until Page Contains Element    id = lots-passport    20
     Input text    id = lots-passport    ${accessDetails} 
     Click Element    id=submissive-btn
     Reload Page
@@ -572,7 +577,7 @@ Login
     [Arguments]  ${username}  ${tender_uaid}  ${answer_data}  ${question_id}
     zupb.Перейти до сторінки запитань    ${username}  ${tender_uaid}
     Click Element    id = question[${question_id}].answer
-    Sleep    1
+    Sleep    3
     Input Text    id=questions-answer    ${answer_data.data.answer}
     Click Element    id=create-question-btn
     Click Element    id = tab-selector-2
@@ -580,6 +585,7 @@ Login
 Перейти до сторінки запитань
     [Arguments]    ${username}    ${tender_uaid}
     zupb.Пошук тендера по ідентифікатору    ${username}    ${tender_uaid}
+    Sleep    10
     Click Element    id = tab-selector-2
 
 Отримати інформацію із запитання
@@ -594,15 +600,15 @@ Login
 Подати цінову пропозицію
     [Arguments]  ${username}  ${tender_uaid}  ${bid}
     zupb.Пошук тендера по ідентифікатору    ${username}    ${tender_uaid}
-    sleep    1
+    sleep    2
     Click Element    id = bid-create-btn
-    Sleep    1s
+    Sleep    2s
     ConvToStr And Input Text    id=bids-value_amount    ${bid.data.value.amount}
     Click Element    id = bids-oferta
     Click Element    id = bid-save-btn
     Sleep    10
     Click Element    id = bid-activate-btn
-    sleep    1
+    sleep    2
 
 ConvToStr And Input Text
     [Arguments]  ${elem_locator}  ${smth_to_input}
@@ -613,7 +619,7 @@ ConvToStr And Input Text
     [Arguments]    @{ARGUMENTS}
     [Documentation]    ${ARGUMENTS[0]} == username
     ...    ${ARGUMENTS[1]} == tenderId
-    Sleep    1
+    Sleep    3
     Click Element    id=bid-delete-btn
 
 Отримати інформацію із пропозиції
@@ -690,12 +696,14 @@ ConvToStr And Input Text
 Отримати інформацію із документа по індексу
     [Arguments]    ${username}    ${tender_uaid}    ${document_index}    ${field}
     zupb.Пошук тендера по ідентифікатору    ${username}    ${tender_uaid}
+    Sleep    5
     ${doc_value}    Get Text    name = ${document_index}.${field}
     [Return]    ${doc_value}
 
 Отримати інформацію із документа
     [Arguments]    ${username}    ${tender_uaid}    ${doc_id}    ${field}
     zupb.Пошук тендера по ідентифікатору    ${username}    ${tender_uaid}
+    Sleep    5
     ${doc_value}    Get Text    xpath=(//a[contains(@name,'${field}.${doc_id}')])
     [Return]    ${doc_value}
 
@@ -728,10 +736,10 @@ ConvToStr And Input Text
 
 Скасування рішення кваліфікаційної комісії
     [Arguments]    ${username}    ${tender_uaid}    ${award_num}
-    Sleep    200
+    Sleep    20
     zupb.Пошук тендера по ідентифікатору    ${username}    ${tender_uaid}
     Wait Until Page Contains Element    id = bids[${award_num}].link
-    Click Element    name = bids[${award_num}].link
+    Click Element    id = bids[${award_num}].link
     Sleep    2
     Click Element    id = cancel-bid-btn
 
