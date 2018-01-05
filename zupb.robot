@@ -22,6 +22,7 @@ ${locator.value-amount}    id = auction_value_amount
 ${locator.value-valueAddedTaxIncluded}    id=auction-valueAddedTaxIncluded
 ${locator.value.currency}    id=value-currency
 ${locator.auctionPeriod.startDate}    id = auction-auctionPeriod_startDate
+${locator.auctionPeriod.endDate}    id = auction-auctionPeriod_endDate
 ${locator.enquiryPeriod.startDate}    id = auction-enquiryPeriod_startDate
 ${locator.enquiryPeriod.endDate}    id = auction-enquiryPeriod_endDate
 ${locator.tenderPeriod.startDate}    id = auction-tenderPeriod_startDate
@@ -92,11 +93,14 @@ ${locator.awards[1].status}    id = awards[1].status
 
 *** Keywords ***
 Підготувати клієнт для користувача
-    [Arguments]    @{ARGUMENTS}
-    Open Browser    ${USERS.users['${ARGUMENTS[0]}'].homepage}    ${USERS.users['${ARGUMENTS[0]}'].browser}    alias=${ARGUMENTS[0]}
-    Set Window Size    @{USERS.users['${ARGUMENTS[0]}'].size}
-    Set Window Position    @{USERS.users['${ARGUMENTS[0]}'].position}
-    Run Keyword If    '${ARGUMENTS[0]}' != 'zupb_Viewer'    Login    ${ARGUMENTS[0]}
+    [Arguments]    ${username}
+    ${alias}=   Catenate   SEPARATOR=   role_  ${username}
+    Set Global Variable   ${BROWSER_ALIAS}   ${alias}
+
+    Open Browser    ${USERS.users['${username}'].homepage}    ${USERS.users['${username}'].browser}    alias=${BROWSER_ALIAS}
+    Set Window Size    @{USERS.users['${username}'].size}
+    Set Window Position    @{USERS.users['${username}'].position}
+    Run Keyword If    '${username}' != 'zupb_Viewer'    Login    ${username}
 
 Підготувати дані для оголошення тендера
     [Arguments]    ${username}    ${tender_data}    ${role_name}
@@ -104,6 +108,7 @@ ${locator.awards[1].status}    id = awards[1].status
 
 Login
     [Arguments]    @{ARGUMENTS}
+    Go to    ${USERS.users['${ARGUMENTS[0]}'].homepage}
     Input text    id=login-form-login    ${USERS.users['${ARGUMENTS[0]}'].login}
     Input text    id = login-form-password    ${USERS.users['${ARGUMENTS[0]}'].password}
     Click Element    id=login-btn
@@ -142,7 +147,7 @@ Login
     ${unit}=    Get From Dictionary    ${items[0].unit}    code
     ${cav_id}=    Get From Dictionary    ${items[0].classification}    id
     ${quantity}=    get_quantity    ${items[0]}
-    Switch Browser    ${ARGUMENTS[0]}
+    Switch Browser    ${BROWSER_ALIAS}
     Wait Until Page Contains Element    id=cabinet    3
     Click Element    id=cabinet
     Wait Until Page Contains Element    id=create-auction-btn    20
@@ -173,7 +178,7 @@ Login
     :FOR   ${index}   IN RANGE   ${Items_length}
     \       Додати предмет    ${items[${index}]}          ${index}
     Sleep    1
-    Click Element    id = submissive-btn
+    Click Element    id = submit-auction-btn
     Click Element    id =publish-btn
     Sleep    2
     ${tender_id}=    Get Text    id = auction-id
@@ -248,7 +253,7 @@ Login
     Click Element    id=lot-update-btn
     Wait Until Page Contains Element    id = lots-vdr    20
     Input Text    id = lots-vdr    ${vdr_url}
-    Click Element    id=submissive-btn
+    Click Element    id=submit-auction-btn
     Reload Page
 
 Додати публічний паспорт активу
@@ -257,7 +262,7 @@ Login
     Click Element    id=lot-update-btn
     Wait Until Page Contains Element    id = lots-passport    20
     Input text    id = lots-passport    ${accessDetails} 
-    Click Element    id=submissive-btn
+    Click Element    id=submit-auction-btn
     Reload Page
 
 Додати офлайн документ
@@ -270,17 +275,15 @@ Login
 
 Пошук тендера по ідентифікатору
     [Arguments]    ${username}  ${tender_uaid}
-    Switch Browser    ${username}
+    Switch Browser    ${BROWSER_ALIAS}
     Go to    ${USERS.users['${username}'].default_page}
-    Wait Until Page Contains Element    name = Auctions[auctionID]
-    Input Text    name = Auctions[auctionID]    ${tender_uaid}
+    Wait Until Page Contains Element    id = auctionssearch-main_search
+    Input Text    id = auctionssearch-main_search    ${tender_uaid}
     Sleep    1
-    Click Element    name = Auctions[title]
-    Sleep    1
+    Click Element    id = public-search-btn
+    Sleep    2
     Wait Until Page Contains Element    id=auction-view-btn
     Click Element    id=auction-view-btn
-    Sleep    1
-    Wait Until Element Is Visible    id=auction-auctionID    6
 
 Отримати інформацію про cancellations[0].status
     Wait Until Page Contains Element    id = cancellation-status
@@ -296,7 +299,7 @@ Login
     [Arguments]    @{ARGUMENTS}
     [Documentation]    ${ARGUMENTS[0]} = username
     ...    ${ARGUMENTS[1]} = ${TENDER_UAID}
-    Switch Browser    ${ARGUMENTS[0]}
+    Switch Browser    ${BROWSER_ALIAS}
     zupb.Пошук тендера по ідентифікатору    ${ARGUMENTS[0]}    ${ARGUMENTS[1]}
 
 Отримати інформацію із предмету
@@ -317,6 +320,7 @@ Login
 Отримати інформацію із тендера
     [Arguments]    @{ARGUMENTS}
     [Documentation]    ${ARGUMENTS[0]} == username
+    ...    ${ARGUMENTS[1]} == tender_uaid
     ...    ${ARGUMENTS[2]} == fieldname
     ${return_value}=    Run Keyword    Отримати інформацію про ${ARGUMENTS[2]}
     [Return]    ${return_value}
@@ -350,7 +354,7 @@ Login
 
 Отримати інформацію про tenderAttempts
     ${data}=    Отримати текст із поля і показати на сторінці    tenderAttempts
-    ${return_value}=    to_int    ${data}
+    ${return_value}=    Convert To Number    ${data}
     [Return]    ${return_value}
 
 Отримати інформацію про tender.data.auctionUrl
@@ -452,32 +456,32 @@ Login
     [Return]    ${return_value}
 
 Отримати інформацію про auctionPeriod.startDate
-    ${date_value}=    Get Text    auction-auctionPeriod_startDate
+    ${date_value}=    Get Text    id = auction-auctionPeriod_startDate
     ${return_value}=    convert_date_to_iso    ${date_value}
     [Return]    ${return_value}
 
 Отримати інформацію про auctionPeriod.endDate
-    ${date_value}=    Get Text    auction-auctionPeriod_endDate
+    ${date_value}=    Get Text    id = auction-auctionPeriod_endDate
     ${return_value}=    convert_date_to_iso    ${date_value}
     [Return]    ${return_value}
 
 Отримати інформацію про tenderPeriod.startDate
-    ${date_value}=    Get Text    auction-tenderPeriod_startDate
+    ${date_value}=    Get Text    id = auction-tenderPeriod_startDate
     ${return_value}=    convert_date_to_iso    ${date_value}
     [Return]    ${return_value}
 
 Отримати інформацію про tenderPeriod.endDate
-    ${date_value}=    Get Text    auction-tenderPeriod_endDate
+    ${date_value}=    Get Text    id = auction-tenderPeriod_endDate
     ${return_value}=    convert_date_to_iso    ${date_value}
     [Return]    ${return_value}
 
 Отримати інформацію про enquiryPeriod.startDate
-    ${date_value}=    Get Text    auction-enquiryPeriod_startDate
+    ${date_value}=    Get Text    id = auction-enquiryPeriod_startDate
     ${return_value}=    convert_date_to_iso    ${date_value}
     [Return]    ${return_value}
 
 Отримати інформацію про enquiryPeriod.endDate
-    ${date_value}=    Get Text    auction-enquiryPeriod_endDate
+    ${date_value}=    Get Text    id = auction-enquiryPeriod_endDate
     ${return_value}=    convert_date_to_iso    ${date_value}
     [Return]    ${return_value}
 
@@ -514,34 +518,32 @@ Login
     ${return_value}=     Отримати текст із поля і показати на сторінці    auction[1].status
     [Return]    ${return_value}
 
-Задати питання
+Задати запитання на тендер
     [Arguments]    @{ARGUMENTS}
     [Documentation]    ${ARGUMENTS[0]} == username
     ...    ${ARGUMENTS[1]} == tenderUaId
     ...    ${ARGUMENTS[2]} == questionId
     ${title}=    Get From Dictionary    ${ARGUMENTS[2].data}    title
     ${description}=    Get From Dictionary    ${ARGUMENTS[2].data}    description
-    zupb.Пошук тендера по ідентифікатору    ${ARGUMENTS[0]}    ${ARGUMENTS[1]} == tenderUaId
-    Wait Until Page Contains Element    id = auction-view-btn
-    Click Element    id = auction-view-btn
-    Click Element    id = tab-2
+    zupb.Пошук тендера по ідентифікатору    ${ARGUMENTS[0]}    ${ARGUMENTS[1]}
+    Click Element    id = tab-selector-2
     Wait Until Page Contains Element    id= create-question-btn
     Click Element    id=create-question-btn
     Sleep    1
     Input text    id=question-title    ${title}
     Input text    id=question-description    ${description}
-    Click Element    id= create-question-btn
+    Click Element    id= submit-question-btn
     ${description}=    Get From Dictionary    ${ARGUMENTS[2].data}    description
 
 Задати запитання на предмет
   [Arguments]  ${username}  ${tender_uaid}  ${item_id}  ${question}
   zupb.Пошук тендера по ідентифікатору  ${username}  ${tender_uaid}
   Sleep    2
-  Click Element     id = question[${item_id}].item
+  Click Element     id = ${item_id}item
   Sleep  3
   Input text          id=question-title                 ${question.data.title}
   Input text          id=question-description          ${question.data.description}
-  Click Element     id=create-question-btn
+  Click Element     id=submit-question-btn
   Sleep  3
 
 Отримати інформацію про questions[${index}].title
@@ -575,7 +577,9 @@ Login
 
 Відповісти на запитання
     [Arguments]  ${username}  ${tender_uaid}  ${answer_data}  ${question_id}
-    zupb.Перейти до сторінки запитань    ${username}  ${tender_uaid}
+    zupb.Пошук тендера по ідентифікатору    ${username}    ${tender_uaid}
+    Click Element    id = tab-selector-2
+    Sleep    2
     Click Element    id = question[${question_id}].answer
     Sleep    3
     Input Text    id=questions-answer    ${answer_data.data.answer}
@@ -585,7 +589,6 @@ Login
 Перейти до сторінки запитань
     [Arguments]    ${username}    ${tender_uaid}
     zupb.Пошук тендера по ідентифікатору    ${username}    ${tender_uaid}
-    Sleep    10
     Click Element    id = tab-selector-2
 
 Отримати інформацію із запитання
@@ -600,20 +603,17 @@ Login
 Подати цінову пропозицію
     [Arguments]  ${username}  ${tender_uaid}  ${bid}
     zupb.Пошук тендера по ідентифікатору    ${username}    ${tender_uaid}
+    ${amount}=    bid_value    ${bid}    
     sleep    2
     Click Element    id = bid-create-btn
     Sleep    2s
-    ConvToStr And Input Text    id=bids-value_amount    ${bid.data.value.amount}
-    Click Element    id = bids-oferta
+    Run Keyword If    ${bid['data'].qualified} != ${False}    Click Element    id=bids-oferta
+    Run Keyword If    '${amount}' != ''   Input Text    id=bids-value_amount    ${amount}
+    Sleep    2
     Click Element    id = bid-save-btn
-    Sleep    10
     Click Element    id = bid-activate-btn
-    sleep    2
-
-ConvToStr And Input Text
-    [Arguments]  ${elem_locator}  ${smth_to_input}
-    ${smth_to_input}=  Convert To String  ${smth_to_input}
-    Input Text  ${elem_locator}  ${smth_to_input}
+    sleep    10
+    Reload Page
 
 Скасувати цінову пропозицію
     [Arguments]    @{ARGUMENTS}
@@ -625,29 +625,39 @@ ConvToStr And Input Text
 Отримати інформацію із пропозиції
     [Arguments]    ${username}    ${tender_uaid}    ${field}
     zupb.Пошук тендера по ідентифікатору    ${username}    ${tender_uaid}
-    Click Element    id =bids[0].link
+    Click Element    id =bid-create-btn
     Wait Until Page Contains Element    id=bids-value_amount
-    ${value}=    Get Value    id=bids-value_amount
+    ${value}=    Get Text    id=bids-value_amount
     ${value}=    Convert To Number    ${value}
     [Return]    ${value}
 
 Змінити цінову пропозицію
-    [Arguments]    @{ARGUMENTS}
-    [Documentation]    ${ARGUMENTS[0]} == ${test_bid_data}
-    ${amount}=    get_str    ${ARGUMENTS[0].data.value.amount}
-    Go To    https://etm.zub.com.ua/bids/index
-    Wait Until Page Contains Element    id= bid-update
-    Click Element    id= bid-update
-    sleep    1s
-    Input Text    id=bids-value_amount    ${amount}
-    Click Element    id= bid-save-btn
+    [Arguments]  ${username}  ${tender_uaid}  ${amount}  ${amount_value}
+    zupb.Пошук тендера по ідентифікатору    ${username}    ${tender_uaid}
+    sleep    2
+    Click Element    id = bid-create-btn
+    Sleep    2s
+    Click Element    id = bid-update-btn
+    Sleep    2
+    Click Element    id = bids-oferta
+    ${value}=    Convert To String    ${amount_value}
+    Input Text    id=bids-value_amount    ${value}
+    Sleep    2
+    Click Element    id = bid-save-btn
+    sleep    10
+    Reload Page
 
 Завантажити фінансову ліцензію
     [Arguments]  ${username}    ${tender_uaid}    ${path}
+    zupb.Пошук тендера по ідентифікатору    ${username}    ${tender_uaid}
     Sleep    1s
+    Click Element    id = bid-create-btn
+    Sleep    2s
     Select From List By Value    id = files-type    financialLicense
     Choose File    id = files-file    ${path}
     Click Element    id = document-upload-btn
+    Sleep    5
+    Reload Page
 
 Змінити документ в ставці
     [Arguments]    @{ARGUMENTS}
@@ -679,19 +689,21 @@ ConvToStr And Input Text
 
 Отримати посилання на аукціон для глядача
     [Arguments]  ${username}  ${tender_uaid}  ${lot_id}=${Empty}
-    zupb.Пошук тендера по ідентифікатору   ${username}  ${tender_uaid}
-    Wait Until Page Contains Element    id = auction-url
-    Sleep    1
-    ${tender.data.auctionUrl}=    Get Element Attribute    xpath=//*[@id="auction-url"]/a@href
+    Switch Browser  ${BROWSER_ALIAS}
+    Wait Until Keyword Succeeds   10 x   15 s   Run Keywords
+    ...   Reload Page
+    ...   AND   Element Should Be Visible   id = auction-url
+    ${tender.data.auctionUrl}=    Get Text    id = auction-url
     [Return]    ${tender.data.auctionUrl}
 
 Отримати посилання на аукціон для учасника
-    [Arguments]  ${username}  ${tender_uaid}
-    zupb.Пошук тендера по ідентифікатору   ${username}  ${tender_uaid}
-    Wait Until Page Contains Element    id = auction-url
-    Sleep    1
-    ${bid.data.participationUrl}=    Get Element Attribute    xpath=//*[@id="auction-url"]/a@href
-    [Return]    ${bid.data.participationUrl}
+    [Arguments]  ${username}  ${tender_uaid}  ${lot_id}=${Empty}
+    Switch Browser  ${BROWSER_ALIAS}
+    Wait Until Keyword Succeeds   10 x   15 s   Run Keywords
+    ...   Reload Page
+    ...   AND   Element Should Be Visible   id = auction-url
+    ${tender.data.auctionUrl}=    Get Text    id = auction-url
+    [Return]    ${tender.data.auctionUrl}
 
 Отримати інформацію із документа по індексу
     [Arguments]    ${username}    ${tender_uaid}    ${document_index}    ${field}
@@ -751,7 +763,7 @@ ConvToStr And Input Text
     ...      ${ARGUMENTS[2]} = cancellation_reason
     ...      ${ARGUMENTS[3]} = doc_path
     ...      ${ARGUMENTS[4]} = description
-    Go To    https://etm.zub.com.ua/lots/index
+    Click element    id = cabinet
     Sleep   2
     Input Text    name = LotSearch[auctionID]    ${ARGUMENTS[1]}
     Click Element    name = LotSearch[name]
@@ -807,29 +819,29 @@ ConvToStr And Input Text
 Завантажити угоду до тендера
     [Arguments]    ${username}    ${tender_uaid}    ${contract_num}    ${filepath}
     zupb.Пошук тендера по ідентифікатору    ${username}    ${tender_uaid}
-    Wait Until Page Contains Element    name = winner
-    Click Element    name = winner
+    Wait Until Page Contains Element    id = bids[0].link
+    Click Element    id = bids[0].link
     Wait Until Page Contains Element    id = upload-contract-link
     Click Element    id = upload-contract-link
     Choose File    id = files-file    ${filepath}
     Sleep    1
     Click Element    id = upload-contract-btn
-    Reload Page
+    Sleep    10
 
 Підтвердити наявність протоколу аукціону
     [Arguments]  ${username}  ${tender_uaid}  ${award_index}
     zupb.Пошук тендера по ідентифікатору    ${username}  ${tender_uaid}
-    Wait Until Page Contains Element    name = winner
-    Click Element    name = winner
-    Click Element    id = confirm-protocol-btn
+    Wait Until Page Contains Element    id=bids[0].link
+    Click Element    id=bids[0].link
+    Wait Until Page Contains Element    id = confirm-payment-btn
 
 Підтвердити підписання контракту
     [Arguments]    ${username}    ${tender_uaid}    ${contract_num}
     ${file_path}    ${file_title}    ${file_content}=    create_fake_doc
     zupb.Пошук тендера по ідентифікатору    ${username}  ${tender_uaid}
     Sleep    1
-    Wait Until Page Contains Element    name = winner
-    Click Element    name = winner
+    Wait Until Page Contains Element    id = bids[0].link
+    Click Element    id = bids[0].link
     Wait Until Page Contains Element    id = contract-signed-btn
     Click Element    id = contract-signed-btn
     Click Element    id = contract-signed-submit
